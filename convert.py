@@ -1,4 +1,5 @@
 import json
+import os
 
 # словарь скачан с https://kaikki.org/ruwiktionary/raw-wiktextract-data.jsonl.gz ~2.5gb
 # Функция для создания ключа "без специфических букв"
@@ -13,7 +14,7 @@ def normalize(text):
     return low_text
 
 input_file = 'raw-wiktextract-data.jsonl'
-output_file = 'dictionary.json'
+output_file = os.path.join('public', 'dictionary.json')
 result_data = []
 
 with open(input_file, 'r', encoding='utf-8') as f:
