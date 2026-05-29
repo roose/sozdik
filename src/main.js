@@ -71,7 +71,7 @@ function search() {
 
 function render(data) {
   resultsDiv.innerHTML = data.map(item => `
-        <div class="result-item" onclick="copyToClipboard('${item.w}')">
+        <div class="result-item" data-word="${item.w}">
             <span class="copy-hint">клик — копировать</span>
             <div class="word-title">${item.w}</div>
             <div class="translation">${item.t}</div>
@@ -134,6 +134,22 @@ window.addEventListener('keydown', (e) => {
     input.value = '';
     input.focus();
     search();
+  }
+});
+
+document.querySelectorAll('.btn-kz').forEach(button => {
+  button.addEventListener('click', () => {
+    const char = button.getAttribute('data-char');
+    addChar(char);
+  });
+});
+
+resultsDiv.addEventListener('click', (event) => {
+  const item = event.target.closest('.result-item');
+
+  if (item) {
+    const wordToCopy = item.getAttribute('data-word');
+    copyToClipboard(wordToCopy);
   }
 });
 
