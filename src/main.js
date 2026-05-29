@@ -21,17 +21,72 @@ async function loadDict() {
   }
 }
 
+// function getWeight(word, norm, trans, q, qN) {
+//   const w = word.toLowerCase();
+//   const t = trans.toLowerCase();
+//   if (w === q) return 1;
+//   if (norm === qN && w.length === q.length) return 2;
+//   const tParts = t.split(/[;|,]\s*/);
+//   if (tParts.some(p => p.trim() === q)) return 5;
+//   if (w.startsWith(q)) return 10;
+//   if (norm.startsWith(qN)) return 15;
+//   if (t.startsWith(q)) return 20;
+//   if (w.includes(q) || t.includes(q)) return 100 + t.length;
+//   return 999;
+// }
+
 function getWeight(word, norm, trans, q, qN) {
   const w = word.toLowerCase();
   const t = trans.toLowerCase();
+
   if (w === q) return 1;
   if (norm === qN && w.length === q.length) return 2;
+
+  // Разбиваем перевод на части по точкам с запятой или запятым
   const tParts = t.split(/[;|,]\s*/);
-  if (tParts.some(p => p.trim() === q)) return 5;
+
+  // Флаг: нашли ли мы точное совпадение слова после очистки от мусора
+  let hasExactWordAfterClean = false;
+  // Флаг: нашли ли мы фразу, где "мышь" идет как отдельное слово (например, "летучая мышь")
+  let hasPhraseWithWord = false;
+
+  tParts.forEach(p => {
+    const trimmed = p.strip ? p.strip() : p.trim();
+
+    // Очищаем от "зоол. ", "хим. " и скобок
+    const cleanPart = trimmed
+      .replace(/^[а-яё]+\.\s+/, '')
+      .replace(/\s*\(.*?\)\s*/g, '')
+      .trim();
+
+    if (cleanPart === q) {
+      hasExactWordAfterClean = true;
+    }
+
+    // Проверяем, есть ли слово внутри этой части как ОТДЕЛЬНОЕ слово.
+    // Чтобы не зависеть от багов кириллической \b, проверяем пробелы вручную
+    // Слово "мышь" считается отдельным, если вокруг него пробелы или это края строки
+    const wordsInPart = cleanPart.split(/\s+/);
+    if (wordsInPart.includes(q)) {
+      hasPhraseWithWord = true;
+    }
+  });
+
+  // 1. САМЫЙ ТОП: Прямые переводы ("мышь", "зоол. мышь (mus)", "мышь (компьютерная)")
+  if (hasExactWordAfterClean) return 5;
+
   if (w.startsWith(q)) return 10;
   if (norm.startsWith(qN)) return 15;
   if (t.startsWith(q)) return 20;
+
+  // 2. СРЕДНИЙ ПРИОРИТЕТ: Составные понятия, где "мышь" — отдельное слово ("летучая мышь", "домовая мышь")
+  // Даем фиксированный небольшой вес (например, 30), чтобы длина строки вообще не влияла!
+  if (hasPhraseWithWord) return 30;
+
+  // 3. НИЗШИЙ ПРИОРИТЕТ: Частичные совпадения в корне ("мышьяк", "мышьяковистый")
+  // Они гарантированно получат вес 100+ и улетят в самый подвал, под летучих мышей
   if (w.includes(q) || t.includes(q)) return 100 + t.length;
+
   return 999;
 }
 
