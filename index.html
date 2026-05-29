@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Қазақша Сөздік</title>
+    <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Загрузка..." autofocus disabled>
+    </div>
+
+    <div class="buttons">
+        <button class="btn-kz" onclick="addChar('ә')">ә</button>
+        <button class="btn-kz" onclick="addChar('і')">і</button>
+        <button class="btn-kz" onclick="addChar('ң')">ң</button>
+        <button class="btn-kz" onclick="addChar('ғ')">ғ</button>
+        <button class="btn-kz" onclick="addChar('ү')">ү</button>
+        <button class="btn-kz" onclick="addChar('ұ')">ұ</button>
+        <button class="btn-kz" onclick="addChar('қ')">қ</button>
+        <button class="btn-kz" onclick="addChar('ө')">ө</button>
+        <button class="btn-kz" onclick="addChar('һ')">һ</button>
+    </div>
+
+    <div id="results"></div>
+    <div id="toast">Скопировано!</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
