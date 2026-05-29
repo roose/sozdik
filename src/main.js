@@ -73,7 +73,14 @@ function getWeight(word, norm, trans, q, qN) {
   });
 
   // 1. САМЫЙ ТОП: Прямые переводы ("мышь", "зоол. мышь (mus)", "мышь (компьютерная)")
-  if (hasExactWordAfterClean) return 5;
+  if (hasExactWordAfterClean) {
+    // ХИТРЫЙ ФИКС: Если строка ИЗНАЧАЛЬНО была чистой и без мусора (например, просто "лук"),
+    // мы даем ей вес 4.9. Она станет чуть-чуть легче и всплывет выше, чем "лук (оружие)" (вес 5).
+    if (t === q) {
+      return 4.9;
+    }
+    return 5;
+  }
 
   if (w.startsWith(q)) return 10;
   if (norm.startsWith(qN)) return 15;
